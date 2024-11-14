@@ -1,0 +1,48 @@
+# Nome que vai aparecer no GitHub
+name: 'Execucao manual'
+
+# Triggers ou gatilhos de execução
+# Gatilho de execução manual = workflow_dispatch
+on:
+  workflow_dispatch:
+
+jobs:
+  # Job para testes E2E
+  e2e-tests:
+    # Máquina que vai rodar
+    runs-on: ubuntu-latest
+
+    # Passo a passo das ações do job
+    steps:
+      # Checkout do código-fonte
+      - name: Checkout do código
+        uses: actions/checkout@v4
+      
+      # Instalação do Node.js e Yarn
+      - name: Instalar Node.js e Yarn
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      
+      - name: Instalando Yarn
+        run: npm install -g yarn
+
+      # Instalação das dependências
+      - name: Instalando dependências
+        run: yarn
+
+      # Instalação do Playwright
+      - name: Instalando Playwright
+        run: yarn playwright install --with-deps
+
+      # Execução dos testes E2E
+      - name: Testes E2E (end-to-end)
+        run: yarn run e2e
+
+      # Upload do relatório de testes
+      - name: Upload do relatório de testes
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: relatorio-de-testes
+          path: ./playwright-report
