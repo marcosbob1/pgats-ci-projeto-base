@@ -1,10 +1,10 @@
-<testsuites id="" name="" tests="3" failures="0" skipped="0" errors="0" time="5.4508030000000005">
-<testsuite name="example.spec.js" timestamp="2024-11-14T20:27:47.772Z" hostname="chromium" tests="3" failures="0" skipped="0" time="13.142" errors="0">
-<testcase name="user rides › user should be able to ride" classname="example.spec.js" time="4.534">
+<testsuites id="" name="" tests="3" failures="0" skipped="0" errors="0" time="5.33307">
+<testsuite name="example.spec.js" timestamp="2024-11-14T20:53:00.855Z" hostname="chromium" tests="3" failures="0" skipped="0" time="12.874" errors="0">
+<testcase name="user rides › user should be able to ride" classname="example.spec.js" time="4.355">
 </testcase>
-<testcase name="user rides › user above height should not be allowed" classname="example.spec.js" time="4.29">
+<testcase name="user rides › user above height should not be allowed" classname="example.spec.js" time="4.386">
 </testcase>
-<testcase name="user rides › user with minimum height should be allowed" classname="example.spec.js" time="4.318">
+<testcase name="user rides › user with minimum height should be allowed" classname="example.spec.js" time="4.133">
 </testcase>
 </testsuite>
 </testsuites>
