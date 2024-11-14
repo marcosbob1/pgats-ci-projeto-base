@@ -1,0 +1,53 @@
+# nome que vai aparecer no github
+name: 'Execucao por deploy'
+# triggers ou gatilhos de execucao
+# Gatilho de execução por deploy após outro workflow executado = workflow_run
+on:
+  workflow_run:
+    workflows: ['Execucao manual']
+    types:
+      - completed
+
+jobs:
+  e2e-tests:
+    # maquina que vai rodar
+    runs-on: ['ubuntu-latest']
+
+    # passo a paso das acoes do job
+    steps:
+      - name: send telegram message on push
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ${{ github.actor }} created commit:
+            Commit message: ${{ github.event.commits[0].message }}
+
+            Repository: ${{ github.repository }}
+
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+      # - run: echo 'Execucao manual'
+      - uses: actions/checkout@v4
+      - uses: bahmutov/npm-install@v1
+      # - uses: actions/setup-node@v4
+      #     with:
+      #         node-version: lts/*
+
+      - name: Instalando Yarn
+        run: npm install -g yarn
+
+      - name: Instalando dependências
+        run: yarn
+
+      - name: Instalando Playwright
+        run: yarn playwright install --with-deps
+
+      - name: Testes E2E (end-to-end)
+        run: yarn run e2e
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: relatorio-de-testes
+          path: ./playwright-report
