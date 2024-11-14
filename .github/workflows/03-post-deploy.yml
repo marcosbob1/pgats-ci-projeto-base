@@ -11,7 +11,7 @@ on:
 jobs:
   e2e-tests:
     # maquina que vai rodar
-    runs-on: ['ubuntu-latest']
+    runs-on: ubuntu-latest
 
     # passo a paso das acoes do job
     steps:
@@ -23,16 +23,14 @@ jobs:
           message: |
             ${{ github.actor }} created commit:
             Commit message: ${{ github.event.commits[0].message }}
-
             Repository: ${{ github.repository }}
-
             See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
-      # - run: echo 'Execucao manual'
-      - uses: actions/checkout@v4
-      - uses: bahmutov/npm-install@v1
-      # - uses: actions/setup-node@v4
-      #     with:
-      #         node-version: lts/*
+
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalação de dependências do Node.js
+        uses: bahmutov/npm-install@v1
 
       - name: Instalando Yarn
         run: npm install -g yarn
@@ -43,10 +41,14 @@ jobs:
       - name: Instalando Playwright
         run: yarn playwright install --with-deps
 
+      - name: Criar pasta para relatórios
+        run: mkdir -p playwright-report
+
       - name: Testes E2E (end-to-end)
         run: yarn run e2e
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload do relatório de testes
+        uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: relatorio-de-testes
