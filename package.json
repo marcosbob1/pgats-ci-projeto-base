@@ -16,7 +16,8 @@
     "test:unit": "jest --config=jest.config.js",
     "test:mutation": "npx stryker run",
     "start": "lite-server",
-    "e2e": "npx playwright test"
+    "e2e": "yarn playwright test",  // Use Playwright diretamente
+    "test:playwright": "yarn playwright test"  // Novo script para Playwright
   },
   "keywords": [],
   "author": "",
@@ -38,7 +39,7 @@
   "jest": {
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "/tests/e2e/"
+      "/tests/e2e/"  // Ignora testes do Playwright no Jest
     ]
   }
 }
