@@ -17,13 +17,13 @@ jobs:
       # Checkout do código-fonte
       - name: Checkout do código
         uses: actions/checkout@v4
-      
+
       # Instalação do Node.js e Yarn
       - name: Instalar Node.js e Yarn
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-      
+
       - name: Instalando Yarn
         run: npm install -g yarn
 

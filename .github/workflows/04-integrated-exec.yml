@@ -85,4 +85,4 @@ jobs:
     needs: [e2e-tests]
     steps:
       - name: Deploy
-        run: echo "step Deploy"        
+        run: echo "step Deploy"
