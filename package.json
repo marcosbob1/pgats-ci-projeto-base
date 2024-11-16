@@ -12,19 +12,17 @@
     "lint": "npm run lint:ts && npm run lint:format",
     "lint:ts": "tsc -b jsconfig.json",
     "lint:format": "prettier --check --ignore-path .gitignore .",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.config.cjs",
-    "test:unit": "jest --config=jest.config.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:mutation": "npx stryker run",
     "start": "lite-server",
-    "e2e": "yarn playwright test",  // Use Playwright diretamente
-    "test:playwright": "yarn playwright test"  // Novo script para Playwright
+    "e2e": "npx playwright test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.48.2",
-    "@stryker-mutator/core": "~8.5.0",
+    "@playwright/test": "^1.47.2",
+    "@stryker-mutator/core": "6.1.2",
     "@stryker-mutator/jest-runner": "^8.5.0",
     "@stryker-mutator/karma-runner": "^8.6.0",
     "@types/jest": "^29.5.11",
@@ -35,11 +33,5 @@
     "prettier": "^3.2.4",
     "typescript": "^5.3.3",
     "whatwg-fetch": "^3.6.20"
-  },
-  "jest": {
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/tests/e2e/"  // Ignora testes do Playwright no Jest
-    ]
   }
 }

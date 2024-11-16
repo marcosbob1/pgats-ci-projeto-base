@@ -1,36 +1,32 @@
-# nome que vai aparecer no github
-name: 'Execucao por deploy'
-# triggers ou gatilhos de execucao
-# Gatilho de execução por deploy após outro workflow executado = workflow_run
+# CI de Nível 03 – Disparo automático sempre que outro for concluído, como deploy
+
+# nome que vai aparecer la nas opções de pipe
+name: 'Execução por Deploy'
+
+# regras de disparo de execução (triggers/gatilhos)
+# gatilho de exec manual = workflow_dispatch
+
 on:
   workflow_run:
-    workflows: ['Execucao manual']
+    workflows: ['Execução Manual']
     types:
       - completed
 
 jobs:
+  # descrição do job
   e2e-tests:
-    # maquina que vai rodar
+    # maquina que job vai executar
     runs-on: ubuntu-latest
 
-    # passo a paso das acoes do job
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    # passo a passo das açoes do job
     steps:
-      - name: send telegram message on push
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            ${{ github.actor }} created commit:
-            Commit message: ${{ github.event.commits[0].message }}
-            Repository: ${{ github.repository }}
-            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+      - uses: actions/checkout@v4
 
-      - name: Checkout do código
-        uses: actions/checkout@v4
-
-      - name: Instalação de dependências do Node.js
-        uses: bahmutov/npm-install@v1
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     node-version: lts/*
 
       - name: Instalando Yarn
         run: npm install -g yarn
@@ -39,16 +35,14 @@ jobs:
         run: yarn
 
       - name: Instalando Playwright
-        run: yarn playwright install --with-deps
+        run: yarn playwright install
 
-      - name: Criar pasta para relatórios
-        run: mkdir -p playwright-report
-
-      - name: Testes E2E (end-to-end)
+      - name: Teste E2E (end-to-end)
         run: yarn run e2e
 
-      - name: Upload do relatório de testes
-        uses: actions/upload-artifact@v4
+      # disponibilizando relatorio (artefato)
+      # passed, failed, cancelled
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: relatorio-de-testes
