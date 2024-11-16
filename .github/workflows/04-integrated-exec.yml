@@ -1,88 +1,191 @@
 # CI de Nível 04 - Disparo dentro do fluxo de CI de desenvolvimento
-name: 'Execucao integrada'
-# triggers ou gatilhos de execucao
-# Gatilho de execução por deploy após outro workflow executado = workflow_run
-on: push
+name: 'Execução Integrada'
+
+# Gatilho para execução manual do workflow
+on:
+  workflow_dispatch:
 
 jobs:
-  # - baixar as dependencias
-  # - compilar
-  # - testar
+  # Job de inspeção de código
   inspection:
-    # maquina que vai rodar
     runs-on: ubuntu-latest
 
-    #passo a paso das acoes do job
     steps:
-      # - run: echo 'Execucao manual'
+      # Baixa o código do repositório para o ambiente de execução
       - uses: actions/checkout@v4
-      # - uses: actions/setup-node@v4
-      #     with:
-      #         node-version: lts/*
+
+      # Instala Yarn globalmente para gerenciar pacotes e dependências
       - name: Instalando Yarn
         run: npm install -g yarn
 
+      # Instala todas as dependências do projeto necessárias para o lint
       - name: Instalando dependências
         run: yarn
 
-      - name: Padronização de codigo
+      # Executa o ESLint para verificar a padronização e a qualidade do código
+      - name: Padronização de código (Lint)
         run: yarn lint
 
+  # Job de testes unitários
   unit:
     runs-on: ubuntu-latest
-    needs: [inspection]
+    needs: [inspection] # Este job depende da conclusão do job de inspeção
 
     steps:
+      # Baixa o código do repositório para o ambiente de execução
       - uses: actions/checkout@v4
 
+      # Instala Yarn para garantir que todas as dependências do projeto sejam gerenciadas adequadamente
       - name: Instalando Yarn
         run: npm install -g yarn
 
+      # Instala todas as dependências necessárias para os testes unitários
       - name: Instalando dependências
         run: yarn
 
-      - name: Testes Unitários
+      # Executa os testes unitários para verificar o funcionamento correto de pequenas partes do código
+      - name: Testes de Unidade
         run: yarn run test
 
+  # Job de testes E2E com Cypress
   e2e-tests:
-    # maquina que vai rodar
-    runs-on: [ubuntu-latest]
-    needs: [unit]
+    runs-on: ubuntu-latest
+    needs: [unit] # Este job depende da conclusão do job de testes unitários
 
-    #passo a paso das acoes do job
     steps:
-      # - run: echo 'Execucao manual'
+      # Baixa o código do repositório para o ambiente de execução
       - uses: actions/checkout@v4
-      # - uses: actions/setup-node@v4
-      #     with:
-      #         node-version: lts/*
+
+      # Instala Yarn para gerenciar dependências
       - name: Instalando Yarn
         run: npm install -g yarn
 
+      # Instala todas as dependências do projeto, incluindo o Cypress
       - name: Instalando dependências
         run: yarn
 
+      # Instala Playwright, caso esteja sendo usado nos testes
       - name: Instalando Playwright
         run: yarn playwright install
 
-      - name: Subir aplicacao
+      # Inicia a aplicação localmente para que os testes E2E possam interagir com ela
+      - name: Subir aplicação local
         run: yarn start &
 
-      - name: Testes E2E (end-to-end)
+      # Executa os testes E2E para simular o comportamento do usuário e verificar o fluxo de ponta a ponta
+      - name: Teste E2E (end-to-end)
         run: yarn run e2e
         env:
-          URL: 'http://localhost:3000'
+          URL: 'http://localhost:3000/'
 
+      # Faz o upload do relatório de testes E2E como um artefato para consulta posterior
       - uses: actions/upload-artifact@v4
-        # por padrao a pipeline cancela se houver erro para evitar que ele cancele o passo seguinte no caso de erro, se quiser que a pipeline continue, basta adicionar o parametro 'if: ${{ !cancelled() }}'
         if: ${{ !cancelled() }}
         with:
           name: relatorio-de-testes
           path: ./playwright-report
 
+  # Job de deploy
   deploy:
     runs-on: ubuntu-latest
-    needs: [e2e-tests]
+    needs: [e2e-tests] # Este job depende da conclusão dos testes E2E
+
     steps:
+      # Etapa de deploy (simulada aqui com um echo; substituir pelo comando de deploy real)
       - name: Deploy
-        run: echo "step Deploy"
+        run: echo "Step de deploy concluído com sucesso"# CI de Nível 04 - Disparo dentro do fluxo de CI de desenvolvimento
+name: 'Execução Integrada'
+
+# Gatilho para execução manual do workflow
+on:
+  workflow_dispatch:
+
+jobs:
+  # Job de inspeção de código
+  inspection:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Baixa o código do repositório para o ambiente de execução
+      - uses: actions/checkout@v4
+
+      # Instala Yarn globalmente para gerenciar pacotes e dependências
+      - name: Instalando Yarn
+        run: npm install -g yarn
+
+      # Instala todas as dependências do projeto necessárias para o lint
+      - name: Instalando dependências
+        run: yarn
+
+      # Executa o ESLint para verificar a padronização e a qualidade do código
+      - name: Padronização de código (Lint)
+        run: yarn lint
+
+  # Job de testes unitários
+  unit:
+    runs-on: ubuntu-latest
+    needs: [inspection] # Este job depende da conclusão do job de inspeção
+
+    steps:
+      # Baixa o código do repositório para o ambiente de execução
+      - uses: actions/checkout@v4
+
+      # Instala Yarn para garantir que todas as dependências do projeto sejam gerenciadas adequadamente
+      - name: Instalando Yarn
+        run: npm install -g yarn
+
+      # Instala todas as dependências necessárias para os testes unitários
+      - name: Instalando dependências
+        run: yarn
+
+      # Executa os testes unitários para verificar o funcionamento correto de pequenas partes do código
+      - name: Testes de Unidade
+        run: yarn run test
+
+  # Job de testes E2E com Cypress
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: [unit] # Este job depende da conclusão do job de testes unitários
+
+    steps:
+      # Baixa o código do repositório para o ambiente de execução
+      - uses: actions/checkout@v4
+
+      # Instala Yarn para gerenciar dependências
+      - name: Instalando Yarn
+        run: npm install -g yarn
+
+      # Instala todas as dependências do projeto, incluindo o Cypress
+      - name: Instalando dependências
+        run: yarn
+
+      # Instala Playwright, caso esteja sendo usado nos testes
+      - name: Instalando Playwright
+        run: yarn playwright install
+
+      # Inicia a aplicação localmente para que os testes E2E possam interagir com ela
+      - name: Subir aplicação local
+        run: yarn start &
+
+      # Executa os testes E2E para simular o comportamento do usuário e verificar o fluxo de ponta a ponta
+      - name: Teste E2E (end-to-end)
+        run: yarn run e2e
+        env:
+          URL: 'http://localhost:3000/'
+
+      # Faz o upload do relatório de testes E2E como um artefato para consulta posterior
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: relatorio-de-testes
+          path: ./playwright-report
+
+  # Job de deploy
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [e2e-tests] # Este job depende da conclusão dos testes E2E
+
+    steps:
+      # Etapa de deploy (simulada aqui com um echo; substituir pelo comando de deploy real)
+      - name: Deploy
+        run: echo "Step de deploy concluído com sucesso"
