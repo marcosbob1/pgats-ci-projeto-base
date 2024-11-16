@@ -5,6 +5,7 @@ name: 'Execução Integrada'
 on:
   workflow_dispatch:
 
+
 jobs:
   # Job de inspeção de código
   inspection:
